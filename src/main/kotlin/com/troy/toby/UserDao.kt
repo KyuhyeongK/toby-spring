@@ -1,10 +1,10 @@
 package com.troy.toby
 
-import java.sql.Connection
-
-abstract class UserDao {
+class UserDao(
+    private val simpleConnectionMaker: SimpleConnectionMaker = SimpleConnectionMaker(),
+) {
     fun add(user: User) {
-        val conn = getConnection()
+        val conn = simpleConnectionMaker.makeNewConnection()
         val psmt = conn.prepareStatement("""
             insert into user_m (user_id, name, password)
             values (?, ?, ?)
@@ -19,7 +19,7 @@ abstract class UserDao {
     }
 
     fun get(id: String): User {
-        val conn = getConnection()
+        val conn = simpleConnectionMaker.makeNewConnection()
         val psmt = conn.prepareStatement("""
             select user_id, name, password
             from user_m
@@ -32,7 +32,5 @@ abstract class UserDao {
         conn.close()
         return user
     }
-
-    abstract fun getConnection(): Connection
 
 }
