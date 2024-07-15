@@ -1,11 +1,11 @@
 package com.troy.toby
 
+import java.sql.Connection
 import java.sql.DriverManager
 
 class UserDao {
     fun add(user: User) {
-        Class.forName("com.mysql.cj.jdbc.Driver")
-        val conn = DriverManager.getConnection("jdbc:mysql://localhost/toby", "toby", "toby")
+        val conn = getConnection()
         val psmt = conn.prepareStatement("""
             insert into user_m (user_id, name, password)
             values (?, ?, ?)
@@ -20,8 +20,7 @@ class UserDao {
     }
 
     fun get(id: String): User {
-        Class.forName("com.mysql.cj.jdbc.Driver")
-        val conn = DriverManager.getConnection("jdbc:mysql://localhost/toby", "toby", "toby")
+        val conn = getConnection()
         val psmt = conn.prepareStatement("""
             select user_id, name, password
             from user_m
@@ -34,5 +33,11 @@ class UserDao {
         conn.close()
 
         return user
+    }
+
+    private fun getConnection(): Connection {
+        Class.forName("com.mysql.cj.jdbc.Driver")
+        val conn = DriverManager.getConnection("jdbc:mysql://localhost/toby", "toby", "toby")
+        return conn
     }
 }
