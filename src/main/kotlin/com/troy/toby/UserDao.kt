@@ -1,10 +1,10 @@
 package com.troy.toby
 
 class UserDao(
-    private val simpleConnectionMaker: SimpleConnectionMaker = SimpleConnectionMaker(),
+    private val connectionMaker: ConnectionMaker,
 ) {
     fun add(user: User) {
-        val conn = simpleConnectionMaker.makeNewConnection()
+        val conn = connectionMaker.makeConnection()
         val psmt = conn.prepareStatement("""
             insert into user_m (user_id, name, password)
             values (?, ?, ?)
@@ -19,7 +19,7 @@ class UserDao(
     }
 
     fun get(id: String): User {
-        val conn = simpleConnectionMaker.makeNewConnection()
+        val conn = connectionMaker.makeConnection()
         val psmt = conn.prepareStatement("""
             select user_id, name, password
             from user_m
