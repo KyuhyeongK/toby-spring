@@ -1,9 +1,8 @@
 package com.troy.toby
 
 import java.sql.Connection
-import java.sql.DriverManager
 
-class UserDao {
+abstract class UserDao {
     fun add(user: User) {
         val conn = getConnection()
         val psmt = conn.prepareStatement("""
@@ -31,13 +30,9 @@ class UserDao {
         rs.close()
         psmt.close()
         conn.close()
-
         return user
     }
 
-    private fun getConnection(): Connection {
-        Class.forName("com.mysql.cj.jdbc.Driver")
-        val conn = DriverManager.getConnection("jdbc:mysql://localhost/toby", "toby", "toby")
-        return conn
-    }
+    abstract fun getConnection(): Connection
+
 }
