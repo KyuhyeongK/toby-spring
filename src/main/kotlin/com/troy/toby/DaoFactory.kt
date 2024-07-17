@@ -1,11 +1,17 @@
 package com.troy.toby
 
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+
+@Configuration
 class DaoFactory {
+    @Bean
     fun userDao(): UserDao {
         return UserDao(connectionMaker())
     }
 
-    private fun connectionMaker(): ConnectionMaker {
+    @Bean
+    public fun connectionMaker(): ConnectionMaker {
         return SimpleConnectionMaker()
     }
 }
