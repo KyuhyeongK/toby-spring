@@ -11,7 +11,7 @@ class DaoFactory {
     }
 
     @Bean
-    public fun connectionMaker(): ConnectionMaker {
+    fun connectionMaker(): ConnectionMaker {
         return SimpleConnectionMaker()
     }
 }
