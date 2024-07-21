@@ -1,10 +1,12 @@
 package com.troy.toby
 
+import javax.sql.DataSource
+
 class UserDao(
-    private val connectionMaker: ConnectionMaker,
+    private val dataSource: DataSource,
 ) {
     fun add(user: User) {
-        val conn = connectionMaker.makeConnection()
+        val conn = dataSource.connection
         val psmt = conn.prepareStatement("""
             insert into user_m (user_id, name, password)
             values (?, ?, ?)
@@ -19,7 +21,7 @@ class UserDao(
     }
 
     fun get(id: String): User {
-        val conn = connectionMaker.makeConnection()
+        val conn = dataSource.connection
         val psmt = conn.prepareStatement("""
             select user_id, name, password
             from user_m
