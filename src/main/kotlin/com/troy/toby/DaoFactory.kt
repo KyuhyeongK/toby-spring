@@ -16,7 +16,7 @@ class DaoFactory {
     fun dataSource(): DataSource {
         return DataSourceBuilder.create()
             .driverClassName("com.mysql.cj.jdbc.Driver")
-            .url("jdbc:mysql://localhost/toby")
+            .url("jdbc:mysql://localhost:3306/toby")
             .username("toby")
             .password("toby")
             .build()

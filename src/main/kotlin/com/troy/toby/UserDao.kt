@@ -25,7 +25,7 @@ class UserDao(
         val psmt = conn.prepareStatement("""
             select user_id, name, password
             from user_m
-            where id = ?
+            where user_id = ?
         """.trimIndent())
         psmt.setString(1, id)
         val rs = psmt.executeQuery()
