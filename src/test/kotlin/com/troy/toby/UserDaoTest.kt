@@ -1,5 +1,6 @@
 package com.troy.toby
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
@@ -42,6 +43,15 @@ class UserDaoTest : StringSpec({
 
         userDao.add(user3)
         userDao.getCount() shouldBe 3
+    }
+
+    "get 메서드 notFound 를 테스트한다" {
+        val context = AnnotationConfigApplicationContext(DaoFactory::class.java)
+        val userDao = context.getBean("userDao", UserDao::class.java)
+
+        userDao.deleteAll()
+
+        shouldThrow<IllegalArgumentException> { userDao.get("unknown") }
     }
 
 })

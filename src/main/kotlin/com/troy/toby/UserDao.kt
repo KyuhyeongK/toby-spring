@@ -29,8 +29,16 @@ class UserDao(
         """.trimIndent())
         psmt.setString(1, id)
         val rs = psmt.executeQuery()
-        rs.next()
-        val user = User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"))
+
+        var user: User? = null
+        if (rs.next()) {
+            user = User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"))
+        }
+
+        if (user == null) {
+            throw IllegalArgumentException("not found")
+        }
+
         rs.close()
         psmt.close()
         conn.close()
