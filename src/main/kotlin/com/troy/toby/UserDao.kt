@@ -37,4 +37,33 @@ class UserDao(
         return user
     }
 
+    fun deleteAll() {
+        val conn = dataSource.connection
+        val psmt = conn.prepareStatement(
+            """
+            delete from user_m
+        """.trimIndent()
+        )
+        psmt.executeUpdate()
+
+        psmt.close()
+        conn.close()
+    }
+
+    fun getCount(): Int {
+        val conn = dataSource.connection
+        val psmt = conn.prepareStatement(
+            """
+            select count(*) from user_m
+        """.trimIndent()
+        )
+        val rs = psmt.executeQuery()
+        rs.next()
+        val count = rs.getInt(1)
+
+        rs.close()
+        psmt.close()
+        conn.close()
+        return count
+    }
 }
