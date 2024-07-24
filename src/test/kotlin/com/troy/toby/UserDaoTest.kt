@@ -7,10 +7,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 class UserDaoTest : StringSpec({
 
-    "add 한 유저를 get 하는지 테스트한다" {
-        val context = AnnotationConfigApplicationContext(DaoFactory::class.java)
-        val userDao = context.getBean("userDao", UserDao::class.java)
+    lateinit var userDao: UserDao
 
+    beforeTest {
+        val context = AnnotationConfigApplicationContext(DaoFactory::class.java)
+        userDao = context.getBean("userDao", UserDao::class.java)
+    }
+
+    "add 한 유저를 get 하는지 테스트한다" {
         // 테스트 시작 전 deleteAll 처리
         userDao.deleteAll()
         userDao.getCount() shouldBe 0
@@ -25,9 +29,6 @@ class UserDaoTest : StringSpec({
     }
 
     "deleteAll과 getCount를 테스트한다" {
-        val context = AnnotationConfigApplicationContext(DaoFactory::class.java)
-        val userDao = context.getBean("userDao", UserDao::class.java)
-
         userDao.deleteAll()
         userDao.getCount() shouldBe 0
 
@@ -46,11 +47,7 @@ class UserDaoTest : StringSpec({
     }
 
     "get 메서드 notFound 를 테스트한다" {
-        val context = AnnotationConfigApplicationContext(DaoFactory::class.java)
-        val userDao = context.getBean("userDao", UserDao::class.java)
-
         userDao.deleteAll()
-
         shouldThrow<IllegalArgumentException> { userDao.get("unknown") }
     }
 
