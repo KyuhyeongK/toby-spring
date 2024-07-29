@@ -5,24 +5,20 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.ApplicationContext
 import org.springframework.test.context.ContextConfiguration
 
 @ContextConfiguration(classes = [DaoFactory::class])
 class UserDaoTest(
-    @Autowired val context: ApplicationContext,
+    @Autowired val userDao: UserDao,
 ) : StringSpec({
 
     extensions(SpringExtension)
 
-    lateinit var userDao: UserDao
     lateinit var user1: User
     lateinit var user2: User
     lateinit var user3: User
 
     beforeTest {
-        userDao = context.getBean("userDao", UserDao::class.java)
-
         user1 = User("user1", "user1", "user1")
         user2 = User("user2", "user2", "user2")
         user3 = User("user3", "user3", "user3")
