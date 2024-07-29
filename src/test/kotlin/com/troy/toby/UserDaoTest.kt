@@ -2,16 +2,30 @@ package com.troy.toby
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
+import org.springframework.test.context.ContextConfiguration
 
-class UserDaoTest : StringSpec({
+@ContextConfiguration(classes = [DaoFactory::class])
+class UserDaoTest(
+    @Autowired val context: ApplicationContext,
+) : StringSpec({
+
+    extensions(SpringExtension)
 
     lateinit var userDao: UserDao
+    lateinit var user1: User
+    lateinit var user2: User
+    lateinit var user3: User
 
     beforeTest {
-        val context = AnnotationConfigApplicationContext(DaoFactory::class.java)
         userDao = context.getBean("userDao", UserDao::class.java)
+
+        user1 = User("user1", "user1", "user1")
+        user2 = User("user2", "user2", "user2")
+        user3 = User("user3", "user3", "user3")
     }
 
     "add 한 유저를 get 하는지 테스트한다" {
@@ -31,10 +45,6 @@ class UserDaoTest : StringSpec({
     "deleteAll과 getCount를 테스트한다" {
         userDao.deleteAll()
         userDao.getCount() shouldBe 0
-
-        val user1 = User("user1", "user1", "user1")
-        val user2 = User("user2", "user2", "user2")
-        val user3 = User("user3", "user3", "user3")
 
         userDao.add(user1)
         userDao.getCount() shouldBe 1
