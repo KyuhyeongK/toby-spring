@@ -6,72 +6,72 @@ class UserDao(
     private val dataSource: DataSource,
 ) {
     fun add(user: User) {
-        val conn = dataSource.connection
-        val psmt = conn.prepareStatement("""
+        dataSource.connection.use { conn ->
+            conn.prepareStatement(
+                """
             insert into user_m (user_id, name, password)
             values (?, ?, ?)
-        """.trimIndent())
-        psmt.setString(1, user.id)
-        psmt.setString(2, user.name)
-        psmt.setString(3, user.password)
-        psmt.executeUpdate()
+        """.trimIndent()
+            ).use { psmt ->
+                psmt.setString(1, user.id)
+                psmt.setString(2, user.name)
+                psmt.setString(3, user.password)
+                psmt.executeUpdate()
+            }
+        }
 
-        psmt.close()
-        conn.close()
     }
 
     fun get(id: String): User {
-        val conn = dataSource.connection
-        val psmt = conn.prepareStatement("""
+        dataSource.connection.use { conn ->
+            conn.prepareStatement(
+                """
             select user_id, name, password
             from user_m
             where user_id = ?
-        """.trimIndent())
-        psmt.setString(1, id)
-        val rs = psmt.executeQuery()
+        """.trimIndent()
+            ).use { psmt ->
+                psmt.setString(1, id)
+                val rs = psmt.executeQuery()
 
-        var user: User? = null
-        if (rs.next()) {
-            user = User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"))
+                var user: User? = null
+                if (rs.next()) {
+                    user = User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"))
+                }
+
+                if (user == null) {
+                    throw IllegalArgumentException("not found")
+                }
+
+                return user
+            }
         }
-
-        if (user == null) {
-            throw IllegalArgumentException("not found")
-        }
-
-        rs.close()
-        psmt.close()
-        conn.close()
-        return user
     }
 
     fun deleteAll() {
-        val conn = dataSource.connection
-        val psmt = conn.prepareStatement(
-            """
+        dataSource.connection.use { conn ->
+            conn.prepareStatement(
+                """
             delete from user_m
         """.trimIndent()
-        )
-        psmt.executeUpdate()
-
-        psmt.close()
-        conn.close()
+            ).use { psmt ->
+                psmt.executeUpdate()
+            }
+        }
     }
 
     fun getCount(): Int {
-        val conn = dataSource.connection
-        val psmt = conn.prepareStatement(
-            """
+        dataSource.connection.use { conn ->
+            conn.prepareStatement(
+                """
             select count(*) from user_m
         """.trimIndent()
-        )
-        val rs = psmt.executeQuery()
-        rs.next()
-        val count = rs.getInt(1)
-
-        rs.close()
-        psmt.close()
-        conn.close()
-        return count
+            ).use { psmt ->
+                val rs = psmt.executeQuery()
+                rs.next()
+                val count = rs.getInt(1)
+                return count
+            }
+        }
     }
 }
