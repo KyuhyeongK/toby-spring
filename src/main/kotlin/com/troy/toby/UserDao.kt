@@ -4,6 +4,7 @@ import javax.sql.DataSource
 
 class UserDao(
     private val dataSource: DataSource,
+    private val jdbcContext: JdbcContext,
 ) {
     fun add(user: User) {
         dataSource.connection.use { conn ->
@@ -49,15 +50,7 @@ class UserDao(
     }
 
     fun deleteAll() {
-        dataSource.connection.use { conn ->
-            conn.prepareStatement(
-                """
-            delete from user_m
-        """.trimIndent()
-            ).use { psmt ->
-                psmt.executeUpdate()
-            }
-        }
+        jdbcContext.executeSql("delete from user_m")
     }
 
     fun getCount(): Int {
