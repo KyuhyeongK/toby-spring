@@ -57,4 +57,36 @@ class UserDaoTest(
         shouldThrow<IllegalArgumentException> { userDao.get("unknown") }
     }
 
+    "전체 멤버를 조회하는 getAll을 테스트한다" {
+        userDao.deleteAll()
+
+        val users0 = userDao.getAll()
+        users0.size shouldBe 0
+
+        userDao.add(user1)
+        val users1: List<User> = userDao.getAll()
+        users1.size shouldBe 1
+        checkSameUser(user1, users1.first())
+
+        userDao.add(user2)
+        val users2: List<User> = userDao.getAll()
+        users2.size shouldBe 2
+        checkSameUser(user1, users2.first())
+        checkSameUser(user2, users2[1])
+
+        userDao.add(user3)
+        val users3: List<User> = userDao.getAll()
+        users3.size shouldBe 3
+        checkSameUser(user1, users3.first())
+        checkSameUser(user2, users3[1])
+        checkSameUser(user3, users3.last())
+    }
+
 })
+
+private fun checkSameUser(user1: User, user2: User) {
+    user1.id shouldBe user2.id
+    user1.name shouldBe user2.name
+    user1.password shouldBe user2.password
+
+}

@@ -2,10 +2,16 @@ package com.troy.toby
 
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
 
 class UserDao(
     private val jdbcTemplate: JdbcTemplate,
 ) {
+
+    private val userMapper = RowMapper { rs, _ ->
+        User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"))
+    }
+
     fun add(user: User) {
         jdbcTemplate.update(
             """
@@ -22,9 +28,7 @@ class UserDao(
             select user_id, name, password 
             from user_m 
             where user_id = ?
-            """.trimIndent(), { rs, _ ->
-                    User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"))
-                }, id
+            """.trimIndent(), userMapper, id
             )!!
         } catch (e: EmptyResultDataAccessException) {
             throw IllegalArgumentException("not found")
@@ -39,4 +43,11 @@ class UserDao(
     fun getCount(): Int {
         return jdbcTemplate.queryForObject("select count(*) from user_m", Int::class.java) ?: 0
     }
+
+    fun getAll(): List<User> {
+        return jdbcTemplate.query(
+            "select * from user_m order by user_id", userMapper
+        )
+    }
+
 }
