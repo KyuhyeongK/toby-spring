@@ -1,70 +1,42 @@
 package com.troy.toby
 
-import javax.sql.DataSource
+import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.jdbc.core.JdbcTemplate
 
 class UserDao(
-    private val dataSource: DataSource,
-    private val jdbcContext: JdbcContext,
+    private val jdbcTemplate: JdbcTemplate,
 ) {
     fun add(user: User) {
-        dataSource.connection.use { conn ->
-            conn.prepareStatement(
-                """
+        jdbcTemplate.update(
+            """
             insert into user_m (user_id, name, password)
             values (?, ?, ?)
-        """.trimIndent()
-            ).use { psmt ->
-                psmt.setString(1, user.id)
-                psmt.setString(2, user.name)
-                psmt.setString(3, user.password)
-                psmt.executeUpdate()
-            }
-        }
-
+        """.trimIndent(), user.id, user.name, user.password
+        )
     }
 
     fun get(id: String): User {
-        dataSource.connection.use { conn ->
-            conn.prepareStatement(
+        try {
+            return jdbcTemplate.queryForObject(
                 """
-            select user_id, name, password
-            from user_m
+            select user_id, name, password 
+            from user_m 
             where user_id = ?
-        """.trimIndent()
-            ).use { psmt ->
-                psmt.setString(1, id)
-                val rs = psmt.executeQuery()
-
-                var user: User? = null
-                if (rs.next()) {
-                    user = User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"))
-                }
-
-                if (user == null) {
-                    throw IllegalArgumentException("not found")
-                }
-
-                return user
-            }
+            """.trimIndent(), { rs, _ ->
+                    User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"))
+                }, id
+            )!!
+        } catch (e: EmptyResultDataAccessException) {
+            throw IllegalArgumentException("not found")
         }
+
     }
 
     fun deleteAll() {
-        jdbcContext.executeSql("delete from user_m")
+        jdbcTemplate.update("delete from user_m")
     }
 
     fun getCount(): Int {
-        dataSource.connection.use { conn ->
-            conn.prepareStatement(
-                """
-            select count(*) from user_m
-        """.trimIndent()
-            ).use { psmt ->
-                val rs = psmt.executeQuery()
-                rs.next()
-                val count = rs.getInt(1)
-                return count
-            }
-        }
+        return jdbcTemplate.queryForObject("select count(*) from user_m", Int::class.java) ?: 0
     }
 }

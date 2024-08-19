@@ -3,13 +3,14 @@ package com.troy.toby
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
 
 @Configuration
 class DaoFactory {
     @Bean
     fun userDao(): UserDao {
-        return UserDao(dataSource())
+        return UserDao(JdbcTemplate(dataSource()))
     }
 
     @Bean
