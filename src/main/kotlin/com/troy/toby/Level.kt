@@ -1,9 +1,9 @@
 package com.troy.toby
 
-enum class Level(val code: String) {
-    BASIC("01"),
-    SILVER("02"),
-    GOLD("03"),
+enum class Level(val code: String, val nextLevel: Level?) {
+    GOLD("03", null),
+    SILVER("02", GOLD),
+    BASIC("01", SILVER),
     ;
 
     companion object {
