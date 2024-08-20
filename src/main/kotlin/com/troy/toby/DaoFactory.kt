@@ -10,7 +10,7 @@ import javax.sql.DataSource
 class DaoFactory {
     @Bean
     fun userDao(): UserDao {
-        return UserDao(JdbcTemplate(dataSource()))
+        return UserDaoJdbc(JdbcTemplate(dataSource()))
     }
 
     @Bean
