@@ -6,10 +6,17 @@ import org.springframework.jdbc.core.RowMapper
 
 class UserDaoJdbc(
     private val jdbcTemplate: JdbcTemplate,
-) : UserDao{
+) : UserDao {
 
     private val userMapper = RowMapper { rs, _ ->
-        User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"), Level.valueOfCode(rs.getString("level")), rs.getInt("login_cnt"), rs.getInt("recommended_cnt"))
+        User(
+            rs.getString("user_id"),
+            rs.getString("name"),
+            rs.getString("password"),
+            Level.valueOfCode(rs.getString("level")),
+            rs.getInt("login_cnt"),
+            rs.getInt("recommended_cnt")
+        )
     }
 
     override fun add(user: User) {
@@ -50,4 +57,17 @@ class UserDaoJdbc(
         )
     }
 
+    override fun update(user: User) {
+        jdbcTemplate.update(
+            """
+                update user_m 
+                set name = ?
+                , password = ?
+                , level = ?
+                , login_cnt = ?
+                , recommended_cnt = ?
+                where user_id = ?
+            """.trimIndent(), user.name, user.password, user.level.code, user.loginCount, user.recommendedCount, user.id
+        )
+    }
 }

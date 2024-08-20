@@ -23,4 +23,9 @@ class DaoFactory {
             .build()
 
     }
+
+    @Bean
+    fun userService(): UserService {
+        return UserService(userDao())
+    }
 }

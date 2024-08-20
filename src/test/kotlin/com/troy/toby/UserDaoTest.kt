@@ -5,7 +5,6 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.dao.DataAccessException
 import org.springframework.test.context.ContextConfiguration
 
 @ContextConfiguration(classes = [DaoFactory::class])
@@ -83,6 +82,26 @@ class UserDaoTest(
         checkSameUser(user3, users3.last())
     }
 
+    "유저 업데이트 테스트" {
+        userDao.deleteAll()
+
+        userDao.add(user1)
+        userDao.add(user2)
+
+        user1.name = "변경이름"
+        user1.password = "password1"
+        user1.level = Level.GOLD
+        user1.loginCount = 1000
+        user1.recommendedCount = 999
+
+        userDao.update(user1)
+
+        val updatedUser = userDao.get(user1.id)
+        checkSameUser(user1, updatedUser)
+
+        val sameUser2 = userDao.get(user2.id)
+        checkSameUser(user2, sameUser2)
+    }
 })
 
 private fun checkSameUser(user1: User, user2: User) {

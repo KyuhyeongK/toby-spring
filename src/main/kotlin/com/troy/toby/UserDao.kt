@@ -11,4 +11,6 @@ interface UserDao {
     fun deleteAll()
 
     fun getCount(): Int
+
+    fun update(user: User)
 }
