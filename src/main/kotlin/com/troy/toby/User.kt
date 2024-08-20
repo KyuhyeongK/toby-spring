@@ -1,7 +1,10 @@
 package com.troy.toby
 
-class User(
+data class User(
     var id: String,
     var name: String,
-    var password: String
+    var password: String,
+    var level: Level = Level.BASIC,
+    var loginCount: Int = 0,
+    var recommendedCount: Int = 0,
 )

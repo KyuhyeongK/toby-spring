@@ -5,6 +5,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.DataAccessException
 import org.springframework.test.context.ContextConfiguration
 
 @ContextConfiguration(classes = [DaoFactory::class])
@@ -19,9 +20,9 @@ class UserDaoTest(
     lateinit var user3: User
 
     beforeTest {
-        user1 = User("user1", "user1", "user1")
-        user2 = User("user2", "user2", "user2")
-        user3 = User("user3", "user3", "user3")
+        user1 = User("user1", "user1", "user1", Level.BASIC, 1, 0)
+        user2 = User("user2", "user2", "user2", Level.SILVER, 55, 10)
+        user3 = User("user3", "user3", "user3", Level.GOLD, 100, 40)
     }
 
     "add 한 유저를 get 하는지 테스트한다" {
@@ -88,5 +89,7 @@ private fun checkSameUser(user1: User, user2: User) {
     user1.id shouldBe user2.id
     user1.name shouldBe user2.name
     user1.password shouldBe user2.password
-
+    user1.level shouldBe user2.level
+    user1.loginCount shouldBe user2.loginCount
+    user1.recommendedCount shouldBe user2.recommendedCount
 }

@@ -9,15 +9,15 @@ class UserDaoJdbc(
 ) : UserDao{
 
     private val userMapper = RowMapper { rs, _ ->
-        User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"))
+        User(rs.getString("user_id"), rs.getString("name"), rs.getString("password"), Level.valueOfCode(rs.getString("level")), rs.getInt("login_cnt"), rs.getInt("recommended_cnt"))
     }
 
     override fun add(user: User) {
         jdbcTemplate.update(
             """
-            insert into user_m (user_id, name, password)
-            values (?, ?, ?)
-        """.trimIndent(), user.id, user.name, user.password
+            insert into user_m (user_id, name, password, level, login_cnt, recommended_cnt)
+            values (?, ?, ?, ?, ?, ?)
+        """.trimIndent(), user.id, user.name, user.password, user.level.code, user.loginCount, user.recommendedCount
         )
     }
 
@@ -25,7 +25,7 @@ class UserDaoJdbc(
         try {
             return jdbcTemplate.queryForObject(
                 """
-            select user_id, name, password 
+            select user_id, name, password, level, login_cnt, recommended_cnt
             from user_m 
             where user_id = ?
             """.trimIndent(), userMapper, id
